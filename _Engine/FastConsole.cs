@@ -62,12 +62,14 @@ public static class FastConsole
 	//const double TargetFps = 30;
 	//static double fps = 0;
 	//static double targetTickDelay = Stopwatch.Frequency / TargetFps;
-	public static IntPtr ConsoleHandle { get; private set; } = GetStdHandle(-11);
+	public static IntPtr ConsoleOutHandle { get; private set; } = GetStdHandle(-11);
+	public static IntPtr ConsoleInHandle { get; private set; } = GetStdHandle(-10);
+
 	public static int ConsoleSize { get; private set; }
 
 	static FastConsole() 
 	{
-		ConsoleSize = GetConsoleSize(ConsoleHandle);
+		ConsoleSize = GetConsoleSize(ConsoleOutHandle);
 	}
 
 	public static void Clear() => Fill(' ');
@@ -75,7 +77,7 @@ public static class FastConsole
 	public static void Fill(char character)
 	{
 		char[] charBuffer = new string(character, ConsoleSize).ToCharArray();
-		WriteConsoleOutputCharacterW(ConsoleHandle, charBuffer, (uint)charBuffer.LongLength, new Coord { X = 0, Y = 0 }, out _);
+		WriteConsoleOutputCharacterW(ConsoleOutHandle, charBuffer, (uint)charBuffer.LongLength, new Coord { X = 0, Y = 0 }, out _);
 	}
 
 	internal static int GetConsoleSize(IntPtr consoleOutput)
@@ -90,6 +92,6 @@ public static class FastConsole
 	public static void WriteAt(object value, Coord coord) 
 	{
 		char[] charBuffer = (value?.ToString() ?? "¿?").ToCharArray();
-		WriteConsoleOutputCharacterW(ConsoleHandle, charBuffer, (uint)charBuffer.LongLength, coord, out _);
+		WriteConsoleOutputCharacterW(ConsoleOutHandle, charBuffer, (uint)charBuffer.LongLength, coord, out _);
 	}
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Console_Pong._Engine;
 public interface IGameBehaviour
 {
+    bool IsMultiplayerEnabled { get; set; }
     abstract void Initialize();
     abstract void Update(float deltaTime);
     abstract void FixedUpdate(float deltaTime);

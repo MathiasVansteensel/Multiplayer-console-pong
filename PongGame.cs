@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Console_Pong._Engine;
 using System.Drawing;
+using Console_Pong._Engine._Input;
 
 namespace Console_Pong;
 
@@ -11,6 +12,8 @@ internal class PongGame : IGameBehaviour
 
     const float MovementSpeed = 15f;
     const string PlayerString = "🫵👁👄👁🤏";
+    Player player = new("galla153", PlayerString, MovementSpeed);
+    public bool IsMultiplayerEnabled { get; set; } = false;
 
     #endregion
 
@@ -33,9 +36,15 @@ internal class PongGame : IGameBehaviour
         }
     }
 
+    PointF prevPlayerPos = new();
+
     public void FixedUpdate(float deltaTime)
     {
-        
+        if (player.Position != prevPlayerPos)
+        {
+			MultiplayerClient.SendPlayerToClients(player);
+            prevPlayerPos = player.Position;
+		}
     }
 
     public void UIUpdate(float deltaTime)
@@ -52,35 +61,24 @@ internal class PongGame : IGameBehaviour
 		switch (Input.KeyPressed.Key)
         {
             case ConsoleKey.UpArrow:
-                y -= MovementSpeed * deltaTime;
+                player.MoveBy(0, -MovementSpeed * deltaTime);
                 break;
             case ConsoleKey.DownArrow:
-                y += MovementSpeed * deltaTime;
+                player.MoveBy(0, MovementSpeed * deltaTime);
 				break;
             case ConsoleKey.RightArrow:
-                x += MovementSpeed * deltaTime + 1;
+				player.MoveBy(MovementSpeed * deltaTime + 1, 0);
 				break;
             case ConsoleKey.LeftArrow:
-                x -= MovementSpeed * deltaTime + 1;
+				player.MoveBy(-MovementSpeed * deltaTime - 1, 0);
 				break;
             default:
                 break;
         }
 
-		int playerStrLen = PlayerString.Length;
+#error TODO: Test multiplayer on different devices
 
-		x = Engine.Clamp(x, 0, Console.BufferWidth - playerStrLen);
-        y = Engine.Clamp(y, 0, Console.BufferHeight - 1);
-
-
-		prevX = x;
-        prevY = y;
-
-		short x16 = (short)MathF.Round(x);
-		short y16 = (short)MathF.Round(y);
-		FastConsole.WriteAt(PlayerString, new(x16, y16));
-		if (prevX != x || prevY != y) FastConsole.WriteAt(' ', new((short)MathF.Round(prevX), (short)MathF.Round(prevY)));
+        MultiplayerClient.RenderNetworkPlayers();
+		player.Render();
 	}
-
-
 }

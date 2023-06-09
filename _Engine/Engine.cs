@@ -6,14 +6,20 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Console_Pong._Engine._Input;
 
 namespace Console_Pong._Engine;
 public static class Engine
 {
+    public static Size ConsoleBufferSize 
+    {
+        get => new(Console.BufferWidth, Console.BufferHeight);
+	} 
+
     public static long Time 
     {
-        get => 
-    }
+        get => timeWatch.ElapsedMilliseconds;
+	}
 
     public static bool IsRunning { get; private set; } = false;
     public static bool IsPaused { get; private set; } = false;
@@ -46,7 +52,7 @@ public static class Engine
         set => targetUIUpdateFpsTicks = 10_000_000 / (_targetUIUpdateFps = value);
     }
 
-    public static bool FpsCounterShown { get; private set; } = true;
+    public static bool FpsCounterShown { get; private set; } = false;
 
     private static float targetUpdateFpsTicks;
     private static float targetFixedUpdateFpsTicks;
@@ -66,9 +72,9 @@ public static class Engine
         //init accessors otherwise they're 0 and keep em here for easy access
         //set to number to limit fps (30 recommended) or to -1 to leave unlimited
         TargetUpdateFps = 30;
-        TargetFixedUpdateFps = 60;
-        TargetInputUpdateFps = -1;
-        TargetUIUpdateFps = -1;
+        TargetFixedUpdateFps = 5;
+        TargetInputUpdateFps = 60;
+        TargetUIUpdateFps = 15;
     }
 
     private static Size prevConsoleSize = new(Console.BufferWidth, Console.BufferHeight);
@@ -109,10 +115,8 @@ public static class Engine
                 while (true)
                 {
                     while (!IsPaused) internalFixedUpdate();
-                    if (FixedUpdateWatch.IsRunning)
-                    {
-                        FixedUpdateWatch.Stop();
-                    }
+                    if (FixedUpdateWatch.IsRunning) FixedUpdateWatch.Stop();
+                    if (timeWatch.IsRunning) timeWatch.Stop();
                 }
             });
 
@@ -174,7 +178,10 @@ public static class Engine
         if (FixedUpdateWatch.IsRunning) FixedUpdateWatch.Restart();
         else FixedUpdateWatch.Start();
 
-        RegisteredGame?.FixedUpdate(fixedUpdateDT);
+		if (timeWatch.IsRunning) timeWatch.Restart();
+		else timeWatch.Start();
+
+		RegisteredGame?.FixedUpdate(fixedUpdateDT);
         while (FixedUpdateWatch.ElapsedTicks < targetFixedUpdateFpsTicks) Thread.SpinWait(128);
     }
 

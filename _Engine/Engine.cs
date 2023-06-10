@@ -72,7 +72,7 @@ public static class Engine
         //init accessors otherwise they're 0 and keep em here for easy access
         //set to number to limit fps (30 recommended) or to -1 to leave unlimited
         TargetUpdateFps = 30;
-        TargetFixedUpdateFps = 5;
+        TargetFixedUpdateFps = 10;
         TargetInputUpdateFps = 60;
         TargetUIUpdateFps = 15;
     }

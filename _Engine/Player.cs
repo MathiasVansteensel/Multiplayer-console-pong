@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Console_Pong._Engine;
+
+[Serializable]
 public class Player : IEquatable<Player>
 {
 	internal const int MinChar = 0x1F5FF;
@@ -18,16 +20,16 @@ public class Player : IEquatable<Player>
 	private static Random randomCharacter = new();
 
 	private PointF _position = new PointF(0, 0);
-	public PointF Position { get => _position; internal set => _position = value; } 
-	public string Name { get; internal set; }
-	public bool IsBoundByViewport { get; internal set; } = true;
-	public float MovementSpeed { get; internal set; } = 15f;
+	public PointF Position { get => _position; set => _position = value; } 
+	public string Name { get; set; }
+	public bool IsBoundByViewport { get; set; } = true;
+	public float MovementSpeed { get; set; } = 15f;
 
 	private string _playerString = ((char)randomCharacter.Next(MinChar, MaxChar)).ToString();
 	public string PlayerString 
 	{
 		get => _playerString;
-		internal set => PlayerStringLength = (_playerString = value).Length;
+		set => PlayerStringLength = (_playerString = value).Length;
 	}
 
 	public int PlayerStringLength { get; private set; }

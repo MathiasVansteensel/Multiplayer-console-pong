@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Console_Pong._Engine;
@@ -11,10 +12,19 @@ internal class Program
 {
     static void Main(string[] args)
     {
+		Console.OutputEncoding = Encoding.Unicode;
+		Console.InputEncoding = Encoding.Unicode;
+		Console.WriteLine("==========CONSOLE PONG==========");
+        Console.Write("Username: ");
+        string userName = Console.ReadLine();
 
+		Console.Write("Character: ");
+		string playerString = Console.ReadLine();
 
-        Console.OutputEncoding = Encoding.Unicode;
-		PongGame game = new PongGame();
+        userName = string.IsNullOrWhiteSpace(userName = userName.Trim()) ? null : userName;
+		playerString = string.IsNullOrWhiteSpace(playerString = playerString.Trim()) ? null : playerString;
+
+		PongGame game = new PongGame(userName, playerString);
         Engine.Init(game);
         Engine.Start();
     }

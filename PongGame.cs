@@ -11,18 +11,27 @@ internal class PongGame : IGameBehaviour
     #region GameParams
 
     const float MovementSpeed = 15f;
-    const string PlayerString = "🫵👁👄👁🤏";
-    Player player = new("galla153", PlayerString, MovementSpeed);
-    public bool IsMultiplayerEnabled { get; set; } = false;
+    public string PlayerString { get; set; } = null;
+    public string PlayerName { get; set; }
+    Player player;
+    public bool IsMultiplayerEnabled { get; set; } = true;
 
     #endregion
 
+
+    public PongGame(string playerName = null, string playerString = null)
+    {
+		PlayerName = playerName ?? Guid.NewGuid().ToString();
+		PlayerString = playerString;
+
+		player = new(PlayerName, PlayerString, MovementSpeed);
+	}
 
     public void Initialize()
     {
         //Engine.ShowFpsCounter(CornerAlignment.TopRight);
         Input.OnKeyDown += Input_OnKeyDown;
-    }
+	}
 
     private void Input_OnKeyDown(object? sender, ConsoleKeyInfo e)
     {
@@ -40,7 +49,8 @@ internal class PongGame : IGameBehaviour
 
     public void FixedUpdate(float deltaTime)
     {
-        if (player.Position != prevPlayerPos)
+		Console.Title = $"{1f / deltaTime:0.00} fps";
+		if (player.Position != prevPlayerPos)
         {
 			MultiplayerClient.SendPlayerToClients(player);
             prevPlayerPos = player.Position;
@@ -57,7 +67,6 @@ internal class PongGame : IGameBehaviour
 
     public void Update(float deltaTime)
     {
-		Console.Title = $"{1f / deltaTime:0.00} fps";
 		switch (Input.KeyPressed.Key)
         {
             case ConsoleKey.UpArrow:
@@ -76,7 +85,7 @@ internal class PongGame : IGameBehaviour
                 break;
         }
 
-#error TODO: Test multiplayer on different devices
+//#error TODO: Test multiplayer on different devices
 
         MultiplayerClient.RenderNetworkPlayers();
 		player.Render();

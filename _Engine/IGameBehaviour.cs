@@ -8,6 +8,8 @@ namespace Console_Pong._Engine;
 public interface IGameBehaviour
 {
     bool IsMultiplayerEnabled { get; set; }
+    string PlayerName { get; set; }
+    string PlayerString { get; set; }
     abstract void Initialize();
     abstract void Update(float deltaTime);
     abstract void FixedUpdate(float deltaTime);
